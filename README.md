@@ -87,14 +87,42 @@ To add a new token:
 3. Enter token contract address
 4. Token details will be automatically verified and saved
 
+## Security Features
+
+- **Encryption**: Optional encryption for private keys and mnemonics
+- **Masking**: Sensitive data is masked in logs and console output
+- **Input Validation**: Addresses and amounts are validated before use
+- **Environment Variables**: Sensitive configuration stored in environment variables
+- **Checksum Addresses**: Option to automatically convert addresses to checksum format
+- **Rate Limiting**: API calls are rate-limited to prevent blocking
+
 ## Security Note
 
 - Wallet information is stored in `wallets.csv`
 - Private keys and secret phrases are stored locally
+- Enable encryption by setting `ENCRYPT_PRIVATE_KEYS=true` in your `.env` file
 - Never share private keys or secret phrases
 - Use testnet for testing transactions
 
 ## Recent Changes
+
+### Version 1.4.0 (Current)
+- Enhanced security with encryption capabilities for private keys and mnemonics
+- Improved error handling with a proper exception hierarchy
+- Added utility module for common functions
+- Moved hardcoded values to environment variables
+- Created dedicated token contract interaction module
+- Added proper logging throughout the application
+- Improved API error handling and rate limiting
+- Added support for executing arbitrary functions on token contracts
+- Updated dependencies and improved project structure
+- Added ABI files for tokens and multicall contracts
+- Enhanced input validation for addresses and amounts
+
+### Version 1.3.0
+- Consolidated configuration files into a single file in src/config.py
+- Removed duplicate config.py from root directory
+- Improved project structure
 
 ### Version 1.2.0
 - Added multicall support for fast token balance checking
@@ -118,27 +146,63 @@ To add a new token:
 BlockchainWallets/
 ├── main.py              # Application entry point
 ├── requirements.txt     # Python dependencies
-├── README.md           # Documentation
-├── wallets.csv         # Wallet storage
-├── mainnet_tokens.csv  # Mainnet token list
-├── testnet_tokens.csv  # Testnet token list
-└── src/               # Source code
+├── README.md            # Documentation
+├── .env                 # Environment variables (not tracked by git)
+├── sample.env           # Sample environment variables template
+├── run.sh               # Convenience script to run the application
+├── wallets.csv          # Wallet storage
+├── mainnet_tokens.csv   # Mainnet token list
+├── testnet_tokens.csv   # Testnet token list
+├── abis/                # Contract ABIs
+│   ├── erc20.json       # ERC20 token ABI
+│   └── multicall.json   # Multicall contract ABI
+└── src/                 # Source code
     ├── __init__.py
-    ├── config.py      # Configuration and constants
-    ├── manager.py     # Main application manager
-    ├── menus.py       # Menu interfaces
-    ├── tokens.py      # Token management with multicall
-    ├── transactions.py # Transaction handling
-    └── wallets.py     # Wallet management
+    ├── config.py        # Configuration and constants
+    ├── utils.py         # Utility functions
+    ├── exceptions.py    # Custom exception hierarchy
+    ├── bscscan.py       # BSCScan API integration
+    ├── manager.py       # Main application manager
+    ├── menus.py         # Menu interfaces
+    ├── tokens.py        # Token management with multicall
+    ├── token_contract.py # Token contract interaction
+    ├── transactions.py  # Transaction handling
+    └── wallets.py       # Wallet management
 ```
 
 ## Error Handling
 
-The application includes comprehensive error handling for:
+The application includes a comprehensive exception hierarchy for robust error handling:
+
+- **BlockchainWalletError**: Base exception for all application errors
+  - **WalletError**: Base for wallet-related errors
+    - **WalletFileError**: Errors related to wallet file operations
+    - **WalletImportError**: Errors during wallet import
+    - **WalletCreationError**: Errors during wallet creation
+  - **TokenError**: Base for token-related errors
+    - **TokenFileError**: Errors related to token file operations
+    - **TokenVerificationError**: Errors during token verification
+    - **TokenBalanceError**: Errors during token balance operations
+  - **TransactionError**: Base for transaction-related errors
+    - **InsufficientBalanceError**: Insufficient balance for a transaction
+    - **TransactionFailedError**: Transaction failed
+    - **TransactionTimeoutError**: Transaction timed out
+  - **NetworkError**: Network-related errors
+    - **RPCError**: RPC-related errors
+  - **ValidationError**: Validation errors
+    - **AddressValidationError**: Address validation errors
+    - **AmountValidationError**: Amount validation errors
+  - **ConfigurationError**: Configuration errors
+  - **APIError**: API-related errors
+    - **BSCScanAPIError**: BSCScan API errors
+
+The application handles:
 - Network connectivity issues
 - Invalid transactions
 - Insufficient funds
 - Invalid token contracts
 - User interruptions (Ctrl+C)
+- API rate limiting
+- Input validation
 
 All operations can be safely cancelled using Ctrl+C, and the application will maintain data integrity.

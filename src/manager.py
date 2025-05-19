@@ -16,31 +16,39 @@ class BlockchainWalletManager:
             self.network = self.select_network()
             if not self.network:  # Handle cancellation during network selection
                 raise KeyboardInterrupt
-                
+
+            # Initialize Web3 connection
             self.w3 = Web3(Web3.HTTPProvider(NETWORKS[self.network]['rpc']))
+
+            # For BSC compatibility, we'll handle PoA chain issues directly in our code
+            # instead of relying on middleware that might not be available
+            self.console.print("[cyan]Using BSC-compatible connection settings[/cyan]")
+
             self.chain_id = NETWORKS[self.network]['chain_id']
-            
+
             # Initialize managers
             self.token_manager = TokenManager(
                 self.w3,
                 NETWORKS[self.network]['tokens_file'],
                 self.console,
                 ERC20_ABI,
-                MULTICALL_ADDRESSES[self.network]  # Pass network-specific multicall address
+                MULTICALL_ADDRESSES[self.network],  # Pass network-specific multicall address
+                self.network  # Pass the network type (mainnet/testnet)
             )
-            
+
             self.wallet_manager = WalletManager(
                 self.w3,
                 WALLET_FILE,
-                self.console
+                self.console,
+                self.network  # Pass the network type (mainnet/testnet)
             )
-            
+
             self.transaction_manager = TransactionManager(
                 self.w3,
                 self.chain_id,
                 self.console
             )
-            
+
             self.menu_manager = MenuManager(
                 self.wallet_manager,
                 self.token_manager,

@@ -1,3 +1,46 @@
+# Virtual Environment
 /venv
-/wallets.csv
+/.venv
+/env
+/.env
+
+# Python
 **/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Wallet and Token Data
+/wallets.csv
+/wallets_owned.csv
+/mainnet_tokens.csv
+/testnet_tokens.csv
+*.bak
+
+# Logs
+*.log
+logs/
+blockchain_wallet.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
